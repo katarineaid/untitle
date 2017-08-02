@@ -19,23 +19,22 @@
 </head>
 <body>
 <!--action ="http://localhost:3010/form/v1"-->
-<div role="form" id="myForm" class="form">
+<form id="myForm" class="form" >
     <div class="form-group">
-        <label for="inputName">ФИО</label>
-        <input type="text" class="form-control" placeholder="ФИО" name="fio" id="inputName">
+        <label >ФИО</label>
+        <input type="text" class="form-control" placeholder="ФИО" name="fio" id ="fio"  onchange="onChangeFIO(this.value)">
     </div>
     <div class="form-group">
-        <label for="inputEmail">Email</label>
-        <input type="email" class="form-control" placeholder="Email" name="email" id="inputEmail">
+        <label>Email</label>
+        <input type="email" class="form-control" placeholder="Email" name="email" id ="email" onchange="onChangeEmail(this.value)">
     </div>
     <div class="form-group">
-        <label for="inputPhone">Телефон</label>
-        <input class="form-control" placeholder="+7(999)999-99-99" name="phone" id="inputPhone">
+        <label>Телефон</label>
+        <input class="form-control" placeholder="+7(999)999-99-99" name="phone" id ="phone" onchange="onChangePhone(this.value)">
     </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-success" id="submitButton">Отправить</button>
+    <button type="submit" class="btn btn-success" id="submitButton" onclick="init();">Отправить</button>
     </div>
-</div>
+</form>
 <div id="resultContainer"></div>
 </body>
 </html>
