@@ -6,14 +6,14 @@ let error = require('../config/error.json');
 let progress = require('../config/progress.json');
 
 router.post('/', function(req, res, next) {
-  console.log('req.body', req.body)
   const params = {
     fio: req.body.fio,
     email: req.body.email,
     phone: req.body.phone
   }
 
-  let sum = Math.random();
+  let sum =Math.floor( Math.random()*100);
+  console.log('sum',sum)
   if (sum % 2 === 0) {
     return res.json(success);
   } else if (sum % 3 === 0) {

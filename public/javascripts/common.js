@@ -15,36 +15,57 @@
       e.preventDefault();
       console.log('submit')
       let form = $(this);
+      console.log('form', form)
       let submitBtn = form.find('button[type="submit"]');
-      let check=MyForm.validate(form)
+      let check = MyForm.validate(form)
       if (check.isValid === false) return false;
       submitBtn.attr('disabled', 'disabled');
       let str = form.serialize();
+      $("#resultContainer").removeClass('bg-success bg-danger bg-info error success progress')
       $.ajax({
-        url: 'http://localhost:3010/form',
+        url: form['0'].action,
         type: 'POST',
-        dataType:'json',
+        dataType: 'json',
         data: str
       })
         .done(function(data) {
-          console.log('data',data)
-          if(data.status === "success"){
-            let result = "<p class='text'>"+data.reason+"</p>"
-            $("#resultContainer").html(result).addClass('bg-success');
-          }else if (data.status === "error") {
-            let result = "<p class='text'>"+data.reason+"</p>"
-            $("#resultContainer").html(result).addClass('bg-danger');
-          }else{
-            let result = "<p class='text'>"+data.reason+"</p>"
-            $("#resultContainer").html(result).addClass('bg-info');
+          console.log('data', data)
+          if (data.status === "success") {
+            let result = "<p class='text'>" + data.reason + "</p>";
+            $("#resultContainer").html(result).addClass('bg-success').addClass('success');
+          } else if (data.status === "error") {
+            let result = "<p class='text'>" + data.reason + "</p>";
+            $("#resultContainer").html(result).addClass('bg-danger').addClass('error');
+          } else {
+            let result = "<p class='text'>" + data.reason + "</p>";
+            $("#resultContainer").html(result).addClass('bg-info').addClass('progress ');
           }
-        })
-        .always(function() {
-          submitBtn.removeAttr('disabled');
         });
+
+      function send(form) {
+        $.ajax({
+          url: form['0'].action,
+          type: 'POST',
+          dataType: 'json',
+          data: str
+        })
+          .done(function(data) {
+            console.log('data', data)
+            if (data.status === "success") {
+              let result = "<p class='text'>" + data.reason + "</p>";
+              $("#resultContainer").html(result).addClass('bg-success').addClass('success');
+            } else if (data.status === "error") {
+              let result = "<p class='text'>" + data.reason + "</p>";
+              $("#resultContainer").html(result).addClass('bg-danger').addClass('error');
+            } else {
+              let result = "<p class='text'>" + data.reason + "</p>";
+              $("#resultContainer").html(result).addClass('bg-info').addClass('progress ');
+            }
+          })
+      }
     },
     validate: function(form) {
-      let valid = {isValid: true, errorFields: [] };
+      let valid = {isValid: true, errorFields: []};
       let inputs = form.find('input');
       inputs.tooltip('destroy');
       let rules = {
