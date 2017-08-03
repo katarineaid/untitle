@@ -1,17 +1,94 @@
+let forms=document.getElementsByTagName('form');
+for (let i=0;i<forms.length;i++){
+  forms[i].addEventListener('submit',validator)
+}
+
+var rules = {
+  required: function(el) {
+    if (el.value != '') {
+      return true;
+    }
+    return false;
+  },
+  email: function(el) {
+    if (el.value.includes('@ya.ru') ||
+      el.value.includes('@yandex.ru') ||
+      el.value.includes('@yandex.by') ||
+      el.value.includes('@yandex.ua') ||
+      el.value.includes('@yandex.kz') ||
+      el.value.includes('@yandex.com')) {
+      return true
+    } else {
+      return false
+    }
+  },
+  phone: function(el) {
+    var reg = /\d/g;
+    let value = el.value.match(reg);
+    let sum = findSumma(value);
+    if (sum <= 30) {
+      return true
+    } else {
+      return false
+    }
+  },
+  fio: function(el) {
+    let array = el.value.split(' ');
+    if (array.length !== 3) {
+      return true
+    } else {
+      return false
+    }
+  }
+}
+
+function findSumma(value) {
+  let sum = 0;
+  for (let i = 0; i < value.length; i++) {
+    sum = sum + parseInt(value[i], 10);
+  }
+  return sum
+}
+
+function showErrors(arr) {
+  console.log(arr)
+}
+
+function validator(e) {
+  let inputs = this.elements;
+  let errors = [];
+  for (let i = 0; i < inputs.length; i++) {
+    let rulesList = rulesList.split(' ');
+    for (let j = 0; j < rulesList.length; j++) {
+      if (!rules[rulesList[j]](inputs[i])) {
+        errors.push({
+          name: inputs[i].name,
+          error: rulesList[j]
+        })
+      }
+    }
+  }
+  if (errors.length > 0) {
+    e.preventDefault();
+    showErrors(errors);
+  }
+}
+
+/*
 (function() {
   console.log('function!!!')
   var MyForm = {
 
-    initialize : function () {
+    initialize: function() {
       this.setUpListeners();
     },
 
-    setUpListeners: function () {
+    setUpListeners: function() {
       console.log('submit!!!')
       $('#submitButton').click(MyForm.submitForm);
     },
 
-    submitForm: function (e) {
+    submitForm: function(e) {
       e.preventDefault();
       console.log('submi22222222')
     }
@@ -20,7 +97,7 @@
 
 }());
 
-/*
+
 
   var MyForm = {
 

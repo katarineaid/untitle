@@ -30,3 +30,8 @@
 .success {
   border: 1px solid green;
 }
+.text {
+  text-align: center;
+  font-size: 14pt;
+  font-family: Arial;
+}

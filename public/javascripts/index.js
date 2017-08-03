@@ -55,10 +55,8 @@ function onChangeEmail(value) {
 
 function onChangePhone(value) {
   console.log('onChangePhone', value);
-  value = value.replace('+', '');
-  value = value.replace('(', '');
-  value = value.replace(')', '');
-  value = value.replace(/[-]/g, '');
+  var reg = /\d/g
+  value = value.match(reg);
   console.log('newStr', value);
   let sum = findSumma(value);
   if (sum <= 30) {

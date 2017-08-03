@@ -13,29 +13,28 @@
           href="../javascripts/vendors/bootstrap-datetimepicker/bootstrap-datetimepicker.css"/>
     <script src="../javascripts/vendors/dojo/dojo.js"></script>
 
-    <!-- <script src="../javascripts/index.js"></script>-->
-    <script src="../javascripts/src.js"></script>
     <title>Title</title>
 </head>
 <body>
-<!--action ="http://localhost:3010/form/v1"-->
-<div role="form" id="myForm" class="form">
-    <div class="form-group">
-        <label for="inputName">ФИО</label>
-        <input type="text" class="form-control" placeholder="ФИО" name="fio" id="inputName">
+<div class="container">
+    <div class="col-sm-6">
+        <form role="form" id="myForm">
+            <div class="form-group">
+                <label for="inputFIO">ФИО</label>
+                <input type="text" class="form-control" name="fio" id="inputFIO" placeholder="ФИО">
+            </div>
+            <div class="form-group">
+                <label for="inputEmail1">Email</label>
+                <input type="email" class="form-control" name="email" id="inputEmail1" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="inputPhone">Телефон</label>
+                <input type="text" class="form-control" name="phone" id="inputPhone" placeholder="+7(999)999-99-99">
+            </div>
+            <button type="submit" class="btn btn-success">Отправить</button>
+        </form>
+        <div id="resultContainer"></div>
     </div>
-    <div class="form-group">
-        <label for="inputEmail">Email</label>
-        <input type="email" class="form-control" placeholder="Email" name="email" id="inputEmail">
-    </div>
-    <div class="form-group">
-        <label for="inputPhone">Телефон</label>
-        <input class="form-control" placeholder="+7(999)999-99-99" name="phone" id="inputPhone">
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-success" id="submitButton">Отправить</button>
-    </div>
-</div>
-<div id="resultContainer"></div>
 </body>
+<script src="../javascripts/common.js"></script>
 </html>
