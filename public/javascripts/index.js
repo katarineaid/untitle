@@ -19,7 +19,7 @@
       if (check.isValid === false) return false;
       submitBtn.attr('disabled', 'disabled');
       let arr = MyForm.getData(form);
-      MyForm.setData(arr)
+      MyForm.setData(arr);
       await renderResponse();
 
       async function renderResponse() {
@@ -33,7 +33,6 @@
         } else {
           renderContainer(data)
         }
-
       }
 
       function renderContainer(data) {
@@ -68,6 +67,7 @@
         })
       }
     },
+
     getData: function(form) {
       let inputs = form.find('input');
       let arr = {};
@@ -76,15 +76,17 @@
         let value = input.val();
         let name = input['0'].name;
         Object.assign(arr, {[name]: value})
-      })
+      });
       return arr;
     },
+
     setData: function(arr) {
       let keys = Object.keys(arr);
       keys.map((item) => {
         $('input[name=' + item + ']').val(arr[item]);
       })
     },
+
     validate: function(form) {
       let valid = {isValid: true, errorFields: []};
       let inputs = form.find('input');
@@ -142,7 +144,6 @@
           } else {
             return {status: false, statusText: "обязательное поле"}
           }
-
         }
       }
 
@@ -153,7 +154,6 @@
         }
         return sum
       }
-
 
       $.each(inputs, function(index, val) {
         let input = $(val);
@@ -167,7 +167,7 @@
             trigger: 'manual',
             placement: 'right',
             title: check.statusText
-          }).tooltip('show')
+          }).tooltip('show');
           valid.isValid = false;
           valid.errorFields.push(id);
         } else {
@@ -176,12 +176,13 @@
       });
       return valid;
     },
+
     removeError: function() {
       $(this).tooltip('destroy');
       let id = $(this)['0'].id;
       $("#" + id).removeClass('error');
     }
-  }
+  };
 
   MyForm.initialize();
-})()
+})();
