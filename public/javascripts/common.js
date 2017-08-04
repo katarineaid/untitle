@@ -11,57 +11,54 @@
       $('form').on('keydown', 'input', MyForm.removeError);
     },
 
-    submitForm: function(e) {
+    submitForm: async function(e) {
       e.preventDefault();
-      console.log('submit')
       let form = $(this);
-      console.log('form', form)
       let submitBtn = form.find('button[type="submit"]');
       let check = MyForm.validate(form)
       if (check.isValid === false) return false;
       submitBtn.attr('disabled', 'disabled');
       let str = form.serialize();
-      $("#resultContainer").removeClass('bg-success bg-danger bg-info error success progress')
-      $.ajax({
-        url: form['0'].action,
-        type: 'POST',
-        dataType: 'json',
-        data: str
-      })
-        .done(function(data) {
-          console.log('data', data)
-          if (data.status === "success") {
-            let result = "<p class='text'>" + data.reason + "</p>";
-            $("#resultContainer").html(result).addClass('bg-success').addClass('success');
-          } else if (data.status === "error") {
-            let result = "<p class='text'>" + data.reason + "</p>";
-            $("#resultContainer").html(result).addClass('bg-danger').addClass('error');
-          } else {
-            let result = "<p class='text'>" + data.reason + "</p>";
-            $("#resultContainer").html(result).addClass('bg-info').addClass('progress ');
-          }
-        });
+      await test();
+      async function test(){
+        $("#resultContainer").removeClass('bg-success bg-danger bg-info error success progress text');
+        let data = await send(form);
+        if (data.status === "progress") {
+          renderProgress(data);
+         setTimeout(async function() {
+            await test()
+          },data.timeout)
+        }
+        renderContainer(data);
+      }
+      function renderContainer(data){
+        if (data.status === "success") {
+          renderSuccess(data)
+        } else {
+          renderError(data)
+        }
+      }
 
-      function send(form) {
-        $.ajax({
+      function renderSuccess(data){
+        let result = "<p>" + data.reason + "</p>";
+        $("#resultContainer").html(result).addClass('bg-success').addClass('success').addClass('text');
+      }
+      function renderError(data){
+        let result = "<p>" + data.reason + "</p>";
+        $("#resultContainer").html(result).addClass('bg-danger').addClass('error').addClass('text');
+      }
+       function renderProgress(data) {
+         let result = "<p>" + data.reason + "</p>";
+         $("#resultContainer").html(result).addClass('bg-info').addClass('progress ').addClass('text');
+       }
+
+      async function send(form) {
+        return $.ajax({
           url: form['0'].action,
           type: 'POST',
           dataType: 'json',
           data: str
         })
-          .done(function(data) {
-            console.log('data', data)
-            if (data.status === "success") {
-              let result = "<p class='text'>" + data.reason + "</p>";
-              $("#resultContainer").html(result).addClass('bg-success').addClass('success');
-            } else if (data.status === "error") {
-              let result = "<p class='text'>" + data.reason + "</p>";
-              $("#resultContainer").html(result).addClass('bg-danger').addClass('error');
-            } else {
-              let result = "<p class='text'>" + data.reason + "</p>";
-              $("#resultContainer").html(result).addClass('bg-info').addClass('progress ');
-            }
-          })
       }
     },
     validate: function(form) {

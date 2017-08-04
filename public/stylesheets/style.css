@@ -34,6 +34,7 @@
   text-align: center;
   font-size: 14pt;
   font-family: -webkit-pictograph;
+  height: 30px;
 }
 .progress {
   border: 1px solid blue;

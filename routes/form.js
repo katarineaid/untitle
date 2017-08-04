@@ -11,9 +11,8 @@ router.post('/', function(req, res, next) {
     email: req.body.email,
     phone: req.body.phone
   }
-
-  let sum =Math.floor( Math.random()*100);
-  console.log('sum',sum)
+  let sum = Math.floor(Math.random() * 100 );
+  console.log('sum', sum)
   if (sum % 2 === 0) {
     return res.json(success);
   } else if (sum % 3 === 0) {
