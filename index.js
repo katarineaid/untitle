@@ -1,5 +1,5 @@
 (function() {
-  var MyForm = {
+  let MyForm = {
 
     initialize: function() {
       $("#inputPhone").mask("+7(999)999-99-99");
@@ -7,60 +7,86 @@
     },
 
     setUpListeners: function() {
-      $('form').on('submit', MyForm.submitForm);
+      $('form').on('submit', MyForm.submit);
       $('form').on('keydown', 'input', MyForm.removeError);
     },
 
-    submitForm: async function(e) {
+    submit: async function(e) {
       e.preventDefault();
       let form = $(this);
       let submitBtn = form.find('button[type="submit"]');
       let check = MyForm.validate(form)
       if (check.isValid === false) return false;
       submitBtn.attr('disabled', 'disabled');
-      let str = form.serialize();
-      await test();
-      async function test(){
+      let arr = MyForm.getData(form);
+      MyForm.setData(arr);
+      await renderResponse();
+
+      async function renderResponse() {
         $("#resultContainer").removeClass('bg-success bg-danger bg-info error success progress text');
         let data = await send(form);
         if (data.status === "progress") {
           renderProgress(data);
-         setTimeout(async function() {
-            await test()
-          },data.timeout)
+          setTimeout(async function() {
+            await renderResponse()
+          }, data.timeout)
+        } else {
+          renderContainer(data)
         }
-        renderContainer(data);
       }
-      function renderContainer(data){
+
+      function renderContainer(data) {
         if (data.status === "success") {
-          renderSuccess(data)
+          renderSuccess()
         } else {
           renderError(data)
         }
       }
 
-      function renderSuccess(data){
-        let result = "<p>" + data.reason + "</p>";
+      function renderSuccess() {
+        let result = "<p>" + "Success" + "</p>";
         $("#resultContainer").html(result).addClass('bg-success').addClass('success').addClass('text');
       }
-      function renderError(data){
+
+      function renderError(data) {
         let result = "<p>" + data.reason + "</p>";
         $("#resultContainer").html(result).addClass('bg-danger').addClass('error').addClass('text');
       }
-       function renderProgress(data) {
-         let result = "<p>" + data.reason + "</p>";
-         $("#resultContainer").html(result).addClass('bg-info').addClass('progress ').addClass('text');
-       }
+
+      function renderProgress(data) {
+        let result = "<p>" + data.status + "</p>";
+        $("#resultContainer").html(result).addClass('bg-info').addClass('progress ').addClass('text');
+      }
 
       async function send(form) {
         return $.ajax({
           url: form['0'].action,
           type: 'POST',
           dataType: 'json',
-          data: str
+          data: form.serialize()
         })
       }
     },
+
+    getData: function(form) {
+      let inputs = form.find('input');
+      let arr = {};
+      $.each(inputs, function(index, val) {
+        let input = $(val);
+        let value = input.val();
+        let name = input['0'].name;
+        Object.assign(arr, {[name]: value})
+      });
+      return arr;
+    },
+
+    setData: function(arr) {
+      let keys = Object.keys(arr);
+      keys.map((item) => {
+        $('input[name=' + item + ']').val(arr[item]);
+      })
+    },
+
     validate: function(form) {
       let valid = {isValid: true, errorFields: []};
       let inputs = form.find('input');
@@ -109,7 +135,6 @@
         fio: function(value) {
           if (value != '') {
             let array = value.split(' ');
-            console.log('array', array.length);
             if (array.length === 3) {
               return {status: true}
             } else {
@@ -118,7 +143,6 @@
           } else {
             return {status: false, statusText: "обязательное поле"}
           }
-
         }
       }
 
@@ -129,7 +153,6 @@
         }
         return sum
       }
-
 
       $.each(inputs, function(index, val) {
         let input = $(val);
@@ -143,7 +166,7 @@
             trigger: 'manual',
             placement: 'right',
             title: check.statusText
-          }).tooltip('show')
+          }).tooltip('show');
           valid.isValid = false;
           valid.errorFields.push(id);
         } else {
@@ -152,12 +175,13 @@
       });
       return valid;
     },
+
     removeError: function() {
       $(this).tooltip('destroy');
       let id = $(this)['0'].id;
       $("#" + id).removeClass('error');
     }
-  }
+  };
 
   MyForm.initialize();
-})()
+})();
