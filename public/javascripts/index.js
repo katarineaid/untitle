@@ -1,131 +1,169 @@
-/**
- * Created by ryazanova.ea on 31.07.2017.
- */
+(function() {
+  var MyForm = {
 
+    initialize: function() {
+      $("#inputPhone").mask("+7(999)999-99-99");
+      this.setUpListeners();
+    },
 
-let controllerFIO = false;
-let controllerEmail = false;
-let controllerPhone = false;
-let str = {};
-jQuery(function($) {
-  $("#phone").mask("+7(999)999-99-99");
-});
+    setUpListeners: function() {
+      $('form').on('submit', MyForm.submit);
+      $('form').on('keydown', 'input', MyForm.removeError);
+    },
 
-function onChangeFIO(value) {
-  console.log('onChangeFIO', value)
-  let array = value.split(' ')
-  if (array.length !== 3) {
-    $("#fio").addClass('error');
-    $("#fio").tooltip({
-      trigger: 'manual',
-      placement: 'right',
-      title: 'ФИО: Ровно три слова'
-    }).tooltip('show');
-  } else {
-    $("#fio").tooltip('hide');
-    $("#fio").addClass('success');
-    controllerFIO = true
-    str.fio = value
-  }
-  controlButton()
-}
-
-function onChangeEmail(value) {
-  console.log('onChangeEmail', value)
-  if (value.includes('@ya.ru') ||
-    value.includes('@yandex.ru') ||
-    value.includes('@yandex.by') ||
-    value.includes('@yandex.ua') ||
-    value.includes('@yandex.kz') ||
-    value.includes('@yandex.com')) {
-    $("#email").addClass('success');
-    $("#email").tooltip('hide');
-    controllerEmail = true
-    str.email = value
-  } else {
-    $("#email").addClass('error');
-    $("#email").tooltip({
-      trigger: 'manual',
-      placement: 'right',
-      title: 'Формат email-адреса, но только в доменах ya.ru, yandex.ru, yandex.ua, yandex.by, yandex.kz, yandex.com'
-    }).tooltip('show');
-  }
-  controlButton()
-}
-
-function onChangePhone(value) {
-  console.log('onChangePhone', value);
-  var reg = /\d/g
-  value = value.match(reg);
-  console.log('newStr', value);
-  let sum = findSumma(value);
-  if (sum <= 30) {
-    $("#phone").addClass('success')
-    $("#phone").tooltip('hide')
-    controllerPhone = true;
-    str.phone = value
-  } else {
-    $("#phone").addClass('error');
-    $("#phone").tooltip({
-      trigger: 'manual',
-      placement: 'right',
-      title: 'Cумма всех цифр телефона не должна превышать 30'
-    }).tooltip('show');
-  }
-  controlButton()
-}
-
-function findSumma(value) {
-  let sum = 0;
-  for (let i = 0; i < value.length; i++) {
-    sum = sum + parseInt(value[i], 10);
-  }
-  return sum
-}
-
-function controlButton() {
-  if (controllerFIO && controllerEmail && controllerPhone) {
-    console.log('123', controllerFIO && controllerEmail && controllerPhone)
-    $("#submitButton").addClass('disabled');
-    $("#resultContainer").html("")
-    $.ajax({
-      url: "http://localhost:3010/form",
-      type: 'POST',
-      data: str,
-      dataType: "json",
-      success: function(data) {
-        if (data.status === 'success') {
-          $("#resultContainer").html("<p>Success</p>")
-          $("#resultContainer").addClass('success bg-success')
-        } else if (data.status === 'error') {
-          $("#resultContainer").html("<p>" + data.reason + "</p>")
-          $("#resultContainer").addClass('error bg-danger')
+    submit: async function(e) {
+      e.preventDefault();
+      let form = $(this);
+      let submitBtn = form.find('button[type="submit"]');
+      let check = MyForm.validate(form)
+      if (check.isValid === false) return false;
+      submitBtn.attr('disabled', 'disabled');
+      let str = MyForm.getData(form);
+      await test();
+      async function test(){
+        $("#resultContainer").removeClass('bg-success bg-danger bg-info error success progress text');
+        let data = await send(form);
+        if (data.status === "progress") {
+          renderProgress(data);
+          setTimeout(async function() {
+            await test()
+          },data.timeout)
+        }
+        renderContainer(data);
+      }
+      function renderContainer(data){
+        if (data.status === "success") {
+          renderSuccess(data)
         } else {
-          set(str)
+          renderError(data)
         }
       }
-    })
-      .always(function() {
-        $("#submitButton").removeAttr('disabled');
-      });
-    ;
-  }
-}
 
-function set(str) {
-  $.ajax({
-    url: "http://localhost:3010/form",
-    type: 'POST',
-    data: str,
-    dataType: "json",
-    success: function(data) {
-      if (data.status === 'success') {
-        $("#resultContainer").html("<p>Success</p>")
-        $("#resultContainer").addClass('success bg-success')
-      } else if (data.status === 'error') {
-        $("#resultContainer").html("<p>" + data.reason + "</p>")
-        $("#resultContainer").addClass('error bg-danger')
+      function renderSuccess(data){
+        let result = "<p>" + data.reason + "</p>";
+        $("#resultContainer").html(result).addClass('bg-success').addClass('success').addClass('text');
       }
+      function renderError(data){
+        let result = "<p>" + data.reason + "</p>";
+        $("#resultContainer").html(result).addClass('bg-danger').addClass('error').addClass('text');
+      }
+      function renderProgress(data) {
+        let result = "<p>" + data.reason + "</p>";
+        $("#resultContainer").html(result).addClass('bg-info').addClass('progress ').addClass('text');
+      }
+
+      async function send(form) {
+        return $.ajax({
+          url: form['0'].action,
+          type: 'POST',
+          dataType: 'json',
+          data: str
+        })
+      }
+    },
+    getData:function (form){
+      return form.serialize();
+    },
+    setData:function(){
+
+    },
+    validate: function(form) {
+      let valid = {isValid: true, errorFields: []};
+      let inputs = form.find('input');
+      inputs.tooltip('destroy');
+      let rules = {
+        required: function(value) {
+          if (value != '') {
+            return true;
+          }
+          return false;
+        },
+        email: function(value) {
+          if (value != '') {
+            if (value.includes('@ya.ru') ||
+              value.includes('@yandex.ru') ||
+              value.includes('@yandex.by') ||
+              value.includes('@yandex.ua') ||
+              value.includes('@yandex.kz') ||
+              value.includes('@yandex.com')) {
+              return {status: true}
+            } else {
+              return {
+                status: false,
+                statusText: "Email только в доменах yandex"
+              }
+            }
+          } else {
+            return {status: false, statusText: "обязательное поле"}
+          }
+
+        },
+        phone: function(value) {
+          if (value != '') {
+            var reg = /\d/g;
+            let el = value.match(reg);
+            let sum = findSumma(el);
+            if (sum <= 30) {
+              return {status: true}
+            } else {
+              return {status: false, statusText: "Cумма всех цифр превышает 30"}
+            }
+          } else {
+            return {status: false, statusText: "обязательное поле"}
+          }
+        },
+        fio: function(value) {
+          if (value != '') {
+            let array = value.split(' ');
+            console.log('array', array.length);
+            if (array.length === 3) {
+              return {status: true}
+            } else {
+              return {status: false, statusText: "ФИО: Ровно три слова"}
+            }
+          } else {
+            return {status: false, statusText: "обязательное поле"}
+          }
+
+        }
+      }
+
+      function findSumma(value) {
+        let sum = 0;
+        for (let i = 0; i < value.length; i++) {
+          sum = sum + parseInt(value[i], 10);
+        }
+        return sum
+      }
+
+
+      $.each(inputs, function(index, val) {
+        let input = $(val);
+        let value = input.val();
+        let name = input['0'].name;
+        let id = input['0'].id;
+        let check = rules[name](value);
+        if (!check.status) {
+          $("#" + id).addClass('error');
+          input.tooltip({
+            trigger: 'manual',
+            placement: 'right',
+            title: check.statusText
+          }).tooltip('show')
+          valid.isValid = false;
+          valid.errorFields.push(id);
+        } else {
+          $("#" + id).addClass('success').removeClass('error')
+        }
+      });
+      return valid;
+    },
+    removeError: function() {
+      $(this).tooltip('destroy');
+      let id = $(this)['0'].id;
+      $("#" + id).removeClass('error');
     }
-  })
-}
+  }
+
+  MyForm.initialize();
+})()

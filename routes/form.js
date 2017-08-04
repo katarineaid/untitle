@@ -11,17 +11,15 @@ router.post('/', function(req, res, next) {
     email: req.body.email,
     phone: req.body.phone
   }
-  let sum = Math.floor(Math.random() * 100 );
-  console.log('sum', sum)
+  console.log('params',params);
+  let sum = Math.floor(Math.random() * 100);
   if (sum % 2 === 0) {
-    return res.json(success);
+    return res.json(progress);
   } else if (sum % 3 === 0) {
-    return res.json(error);
+    return res.json(success);
   }
-  return res.json(progress);
-});
-router.get('/v1', function(req, res, next) {
-  res.render('response', {title: 'Express'});
+  return res.json(error);
+
 });
 
 module.exports = router;
