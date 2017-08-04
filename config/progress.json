@@ -1,5 +1,4 @@
 {
   "status": "progress",
-  "timeout": 3000,
-  "reason": "progress"
+  "timeout": 3000
 }
