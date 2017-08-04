@@ -30,8 +30,10 @@
           setTimeout(async function() {
             await renderResponse()
           }, data.timeout)
+        } else {
+          renderContainer(data)
         }
-        renderContainer(data);
+
       }
 
       function renderContainer(data) {
@@ -43,7 +45,7 @@
       }
 
       function renderSuccess() {
-        let result = "<p>"+"Success"+"</p>";
+        let result = "<p>" + "Success" + "</p>";
         $("#resultContainer").html(result).addClass('bg-success').addClass('success').addClass('text');
       }
 
@@ -80,7 +82,7 @@
     setData: function(arr) {
       let keys = Object.keys(arr);
       keys.map((item) => {
-        $('input[name='+item+']').val(arr[item]);
+        $('input[name=' + item + ']').val(arr[item]);
       })
     },
     validate: function(form) {
