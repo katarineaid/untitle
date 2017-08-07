@@ -102,12 +102,6 @@ class MyForm {
     let inputs = form.find('input');
     inputs.tooltip('destroy');
     let rules = {
-      required: function(value) {
-        if (value != '') {
-          return true;
-        }
-        return false;
-      },
       email: function(value) {
         if (value != '') {
           if (value.includes('@ya.ru') ||
