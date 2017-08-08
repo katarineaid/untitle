@@ -103,7 +103,7 @@ class MyForm {
     inputs.tooltip('destroy');
     let rules = {
       email: function(value) {
-        if (value != '') {
+        if (value !== '') {
           if (value.includes('@ya.ru') ||
             value.includes('@yandex.ru') ||
             value.includes('@yandex.by') ||
@@ -123,7 +123,7 @@ class MyForm {
 
       },
       phone: function(value) {
-        if (value != '') {
+        if (value !== '') {
           var reg = /\d/g;
           let el = value.match(reg);
           let sum = findSumma(el);
@@ -137,7 +137,7 @@ class MyForm {
         }
       },
       fio: function(value) {
-        if (value != '') {
+        if (value !== '') {
           let array = value.split(' ');
           if (array.length === 3) {
             return {status: true}
